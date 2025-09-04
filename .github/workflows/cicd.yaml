@@ -10,6 +10,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    permissions:
+        contents: read
+        packages: read
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,6 +32,8 @@ jobs:
 
       - name: Install
         run: npm --prefix frontend ci
+        env:
+            NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Outdated
         run: npm --prefix frontend outdated
