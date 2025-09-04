@@ -40,16 +40,25 @@ jobs:
       - name: Outdated
         run: npm --prefix frontend outdated
         continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Lint
         run: npm --prefix frontend run lint
         continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test
         run: npm --prefix frontend run test:ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         run: npm --prefix frontend run build
+        env:
+          NODE_ENV: production
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
