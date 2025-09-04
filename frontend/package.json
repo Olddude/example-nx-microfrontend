@@ -1,5 +1,5 @@
 {
-  "name": "@olddude/microfrontend-one",
+  "name": "@olddude/example-nx-microfrontend",
   "version": "0.6.0",
   "private": true,
   "dependencies": {

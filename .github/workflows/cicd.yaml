@@ -1,0 +1,190 @@
+name: cicd
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Audit
+        run: npm audit
+        continue-on-error: true
+
+      - name: Install
+        run: npm ci
+
+      - name: Outdated
+        run: npm outdated
+        continue-on-error: true
+
+      - name: Lint
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Test
+        run: npm run test:ci
+
+      - name: Build
+        run: npm run build
+
+  release:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-22.04
+    environment: linode
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "frontend/.nvmrc"
+          cache: "npm"
+
+      - name: Audit
+        run: npm --prefix frontend audit
+        continue-on-error: true
+
+      - name: Install
+        run: npm --prefix frontend ci
+
+      - name: Outdated
+        run: npm --prefix frontend outdated
+        continue-on-error: true
+
+      - name: Lint
+        run: npm --prefix frontend run lint
+        continue-on-error: true
+
+      - name: Test
+        run: npm --prefix frontend run test:ci
+
+      - name: Build
+        run: npm --prefix frontend run build
+        env:
+          NODE_ENV: production
+
+      - name: Create npm package
+        run: npm --prefix frontend run pack
+        env:
+          NODE_ENV: production
+
+      - name: Set release variables
+        id: release_variables
+        run: |
+          project_name=$(node -p "require('./package.json').name")
+          project_version=$(node -p "require('./package.json').version")
+          build_number=${{ github.run_number }}
+          release_artifact_name="$project_name-$project_version-release.$build_number"
+          tgz_file="$project_name-$project_version.tgz"
+          image_name=$(echo "${{ github.repository_owner }}/${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          echo "project_name=$project_name" >> $GITHUB_OUTPUT
+          echo "project_version=$project_version" >> $GITHUB_OUTPUT
+          echo "build_number=$build_number" >> $GITHUB_OUTPUT
+          echo "release_artifact_name=$release_artifact_name" >> $GITHUB_OUTPUT
+          echo "tgz_file=$tgz_file" >> $GITHUB_OUTPUT
+          echo "image_name=$image_name" >> $GITHUB_OUTPUT
+
+      - name: Upload npm package as Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.release_variables.outputs.release_artifact_name }}
+          path: ${{ steps.release_variables.outputs.tgz_file }}
+          retention-days: 90
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: "ghcr.io"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            --build-arg VERSION=${{ steps.release_variables.outputs.project_version }} \
+            --label "org.opencontainers.image.title=${{ steps.release_variables.outputs.project_name }}" \
+            --label "org.opencontainers.image.description=${{ steps.release_variables.outputs.image_description }}" \
+            --label "org.opencontainers.image.version=${{ steps.release_variables.outputs.project_version }}" \
+            --label "org.opencontainers.image.created=${{ github.event.repository.updated_at }}" \
+            --label "org.opencontainers.image.source=${{ github.event.repository.html_url }}" \
+            --label "org.opencontainers.image.revision=${{ github.sha }}" \
+            -t ghcr.io/${{ steps.release_variables.outputs.image_name }}:latest \
+            -t ghcr.io/${{ steps.release_variables.outputs.image_name }}:${{ steps.release_variables.outputs.project_version }} \
+            .
+
+      - name: Push Docker Image
+        run: |
+          docker push ghcr.io/${{ steps.release_variables.outputs.image_name }}:latest
+          docker push ghcr.io/${{ steps.release_variables.outputs.image_name }}:${{ steps.release_variables.outputs.project_version }}
+
+    #   - name: Helm Lint
+    #     run: ./scripts/helm_lint.sh
+
+    #   - name: Extract Kubeconfig
+    #     run: |
+    #       echo "${{ secrets.KUBECONFIG_SECRET }}" > kubeconfig.yaml
+    #       chmod 600 kubeconfig.yaml
+    #     env:
+    #       KUBECONFIG_SECRET: ${{ secrets.KUBECONFIG_SECRET }}
+
+    #   - name: Helm Install or Upgrade
+    #     run: |
+    #       export KUBECONFIG=$(pwd)/kubeconfig.yaml
+    #       if helm status ai-search-server --namespace default > /dev/null 2>&1; then
+    #         echo "Release ai-search-server already exists. Performing upgrade..."
+    #         ./scripts/helm_upgrade.sh
+    #       else
+    #         echo "Release ai-search-server does not exist. Performing install..."
+    #         ./scripts/helm_install.sh
+    #       fi
+    #     env:
+    #       NODE_ENV: production
+    #       GOOGLE_API_KEY: "${{ secrets.GOOGLE_API_KEY }}"
+    #       PORT: 3000
+    #       MODEL: gemini-2.5-flash
+
+      - name: Create Git Tag
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git tag -a ${{ steps.release_variables.outputs.project_version }} -m "Release ${{ steps.release_variables.outputs.project_version }}" || true
+          git push origin ${{ steps.release_variables.outputs.project_version }} || true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.release_variables.outputs.project_version }}
+          tag_name: ${{ steps.release_variables.outputs.project_version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

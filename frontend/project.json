@@ -1,9 +1,9 @@
 {
-  "name": "microfrontend-one",
+  "name": "microfrontend",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/microfrontend-one/src",
+  "sourceRoot": "apps/microfrontend/src",
   "tags": [],
   "targets": {
     "build": {
@@ -12,8 +12,8 @@
         "{options.outputPath}"
       ],
       "options": {
-        "target": "microfrontend-one:build-base",
-        "federationConfig": "apps/microfrontend-one/federation.config.js"
+        "target": "microfrontend:build-base",
+        "federationConfig": "apps/microfrontend/federation.config.js"
       },
       "configurations": {
         "production": {
@@ -49,22 +49,22 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/apps/microfrontend-one",
-        "index": "apps/microfrontend-one/src/index.html",
-        "browser": "apps/microfrontend-one/src/main.ts",
+        "outputPath": "dist/apps/microfrontend",
+        "index": "apps/microfrontend/src/index.html",
+        "browser": "apps/microfrontend/src/main.ts",
         "polyfills": [
           "zone.js"
         ],
-        "tsConfig": "apps/microfrontend-one/tsconfig.app.json",
+        "tsConfig": "apps/microfrontend/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/microfrontend-one/public"
+            "input": "apps/microfrontend/public"
           }
         ],
         "styles": [
-          "apps/microfrontend-one/src/styles.scss"
+          "apps/microfrontend/src/styles.scss"
         ]
       },
       "configurations": {
@@ -100,25 +100,25 @@
       "executor": "@angular/build:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "microfrontend-one:build-base:production"
+          "buildTarget": "microfrontend:build-base:production"
         },
         "development": {
-          "buildTarget": "microfrontend-one:build-base:development"
+          "buildTarget": "microfrontend:build-base:development"
         }
       },
       "defaultConfiguration": "development",
       "options": {
         "port": 4201,
-        "proxyConfig": "apps/microfrontend-one/proxy.conf.json"
+        "proxyConfig": "apps/microfrontend/proxy.conf.json"
       },
       "dependsOn": [
-        "microfrontend-one-backend:serve"
+        "microfrontend-backend:serve"
       ]
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "microfrontend-one:build"
+        "buildTarget": "microfrontend:build"
       }
     },
     "lint": {
@@ -130,7 +130,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "apps/microfrontend-one/jest.config.ts"
+        "jestConfig": "apps/microfrontend/jest.config.ts"
       }
     },
     "serve-static": {
@@ -138,16 +138,16 @@
       "executor": "@nx/web:file-server",
       "defaultConfiguration": "production",
       "options": {
-        "buildTarget": "microfrontend-one:build",
+        "buildTarget": "microfrontend:build",
         "port": 4201,
         "watch": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "microfrontend-one:build:development"
+          "buildTarget": "microfrontend:build:development"
         },
         "production": {
-          "buildTarget": "microfrontend-one:build:production"
+          "buildTarget": "microfrontend:build:production"
         }
       }
     }
