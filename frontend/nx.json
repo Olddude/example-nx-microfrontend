@@ -1,9 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "olddude",
-  "affected": {
-    "defaultBase": "main"
-  },
   "cli": {
     "defaultCollection": "@nx/angular",
     "packageManager": "npm"

@@ -3,7 +3,7 @@ const { withNativeFederation, shareAll } = require('@angular-architects/native-f
 module.exports = withNativeFederation({
   name: 'microfrontendOne',
   exposes: {
-    './Routes': './apps/microfrontend-one/src/app/remote-entry/entry.routes.ts',
+    './Routes': './src/app/remote-entry/entry.routes.ts',
   },
   shared: {
     ...shareAll({ 

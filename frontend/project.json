@@ -3,7 +3,7 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/microfrontend/src",
+  "sourceRoot": "src",
   "tags": [],
   "targets": {
     "build": {
@@ -13,7 +13,7 @@
       ],
       "options": {
         "target": "microfrontend:build-base",
-        "federationConfig": "apps/microfrontend/federation.config.js"
+        "federationConfig": "federation.config.js"
       },
       "configurations": {
         "production": {
@@ -49,22 +49,22 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/apps/microfrontend",
-        "index": "apps/microfrontend/src/index.html",
-        "browser": "apps/microfrontend/src/main.ts",
+        "outputPath": "dist",
+        "index": "src/index.html",
+        "browser": "src/main.ts",
         "polyfills": [
           "zone.js"
         ],
-        "tsConfig": "apps/microfrontend/tsconfig.app.json",
+        "tsConfig": "tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/microfrontend/public"
+            "input": "public"
           }
         ],
         "styles": [
-          "apps/microfrontend/src/styles.scss"
+          "src/styles.scss"
         ]
       },
       "configurations": {
@@ -109,11 +109,8 @@
       "defaultConfiguration": "development",
       "options": {
         "port": 4201,
-        "proxyConfig": "apps/microfrontend/proxy.conf.json"
-      },
-      "dependsOn": [
-        "microfrontend-backend:serve"
-      ]
+        "proxyConfig": "proxy.conf.json"
+      }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -130,7 +127,7 @@
         "{workspaceRoot}/coverage/{projectRoot}"
       ],
       "options": {
-        "jestConfig": "apps/microfrontend/jest.config.ts"
+        "jestConfig": "jest.config.ts"
       }
     },
     "serve-static": {
