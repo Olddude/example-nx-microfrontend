@@ -33,7 +33,7 @@ jobs:
       - name: Install
         run: npm --prefix frontend ci
         env:
-            NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Outdated
         run: npm --prefix frontend outdated
