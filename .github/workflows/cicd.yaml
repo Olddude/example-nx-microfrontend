@@ -18,40 +18,32 @@ jobs:
       - name: Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: "frontend/.nvmrc"
           cache: "npm"
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Audit
-        run: npm audit
+        run: npm --prefix frontend audit
         continue-on-error: true
 
       - name: Install
-        run: npm ci
+        run: npm --prefix frontend ci
 
       - name: Outdated
-        run: npm outdated
+        run: npm --prefix frontend outdated
         continue-on-error: true
 
       - name: Lint
-        run: npm run lint
+        run: npm --prefix frontend run lint
         continue-on-error: true
 
       - name: Test
-        run: npm run test:ci
+        run: npm --prefix frontend run test:ci
 
       - name: Build
-        run: npm run build
+        run: npm --prefix frontend run build
 
   release:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     needs: build
     runs-on: ubuntu-22.04
     environment: linode
