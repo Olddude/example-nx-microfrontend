@@ -1,0 +1,12 @@
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.168Z - Started listening on: /tmp/a200e85f9d79f2575715/d.sock
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.170Z - [WATCHER]: Subscribed to changes within: /mnt/data/example-nx/example-nx-microfrontend/frontend (native)
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.179Z - Established a connection. Number of open connections: 1
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.180Z - Established a connection. Number of open connections: 2
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.183Z - Closed a connection. Number of open connections: 1
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.186Z - [REQUEST]: Responding to the client. Shutdown initiated
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.186Z - Done responding to the client Shutdown initiated
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.186Z - Handled FORCE_SHUTDOWN. Handling time: 0. Response time: 1.
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.187Z - Closed a connection. Number of open connections: 0
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.188Z - [WATCHER]: Stopping the watcher for /mnt/data/example-nx/example-nx-microfrontend/frontend (sources)
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.188Z - [WATCHER]: Stopping the watcher for /mnt/data/example-nx/example-nx-microfrontend/frontend (outputs)
+[NX v20.8.2 Daemon Server] - 2025-09-04T16:36:14.188Z - Server stopped because: "Request to shutdown"

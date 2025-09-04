@@ -3,13 +3,14 @@
   "version": "0.6.0",
   "private": true,
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",
-    "lint": "ng lint"
+    "nx": "nx",
+    "start": "nx serve microfrontend",
+    "build": "nx build microfrontend",
+    "build:prod": "nx build microfrontend --configuration=production",
+    "watch": "nx build microfrontend --watch --configuration development",
+    "test": "nx test microfrontend",
+    "test:ci": "nx test microfrontend --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",
+    "lint": "nx lint microfrontend"
   },
   "dependencies": {
     "@angular/animations": "~20.1.0",
@@ -31,6 +32,9 @@
     "@angular-builders/custom-webpack": "^20.0.0",
     "@angular-devkit/build-angular": "~20.1.0",
     "@angular/compiler-cli": "~20.1.0",
+    "@nx/angular": "21.4.0",
+    "@nx/workspace": "^21.4.0",
+    "nx": "^21.4.0",
     "typescript": "~5.8.2",
     "webpack": "^5.90.0"
   }
