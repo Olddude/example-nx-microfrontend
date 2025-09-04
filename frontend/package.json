@@ -2,6 +2,15 @@
   "name": "@olddude/example-nx-microfrontend",
   "version": "0.6.0",
   "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",
+    "lint": "ng lint"
+  },
   "dependencies": {
     "@angular/animations": "~20.1.0",
     "@angular/common": "~20.1.0",
